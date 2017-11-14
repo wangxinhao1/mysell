@@ -56,7 +56,7 @@
         <div class="factView">
           <span class="title">商家实景</span>
           <div class="imgList" ref="imgWrapper">
-            <ul>
+            <ul >
               <li class="img" v-for="imgItem in seller.pics">
                 <img :src="imgItem" alt="" width="120" height="90">
               </li>
@@ -126,6 +126,8 @@
         console.log(err);
       });
       this.picMap=['decrease','discount','guarantee','invoice','special']
+    },
+    methods:{
     },
     computed:{
       selectFoods(){
@@ -359,10 +361,10 @@
         width:100%;
         float: left;
         ul{
+
           width:150%;
-
           .img{
-
+            float:left;
             width:120px;
             height:90px;
             display: inline-block;

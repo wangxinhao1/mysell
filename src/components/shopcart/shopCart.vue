@@ -4,7 +4,7 @@
         <div class="shoppingCart" v-show="flag">
           <div class="title">
             <span class="cart">购物车</span>
-            <span class="clear" @click="clear(),cart()" >清空</span>
+            <span class="clear" @click="clear()" >清空</span>
           </div>
           <div class="cart-list" ref="foodSwiper">
             <ul >

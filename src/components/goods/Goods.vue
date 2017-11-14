@@ -1,5 +1,5 @@
 <template>
-
+  <div>
     <div class="goods"  v-if="goods!=null">
       <div class="menu-wrapper"  ref="menuWrapper">
         <ul>
@@ -13,10 +13,10 @@
       </div>
       <div class="goods-wrapper"  ref="goodsWrapper">
         <ul>
-          <li class="food-list" v-for="good in goods">
+          <li class="food-list" v-for="good in goods" >
             <h3 class="title">{{good.name}}</h3>
             <ul>
-              <li class="food-item" v-for="food in good.foods">
+              <li class="food-item" v-for="food in good.foods" @click="nowfood=food">
                 <div class="icon">
                   <img :src="food.image" @click="food0()" width="57" height="57" alt="">
                 </div>
@@ -46,6 +46,8 @@
       </div>
       <!--商品详情页-->
     </div>
+  <food :foods="nowfood" :flag="flag1"></food>
+  </div>
 </template>
 <script>
   import Food from './food/Food.vue';
@@ -63,7 +65,8 @@
         goodsScroll:null,
         scrollY:0,
         foodsHeight:[],
-        flag1:false
+        flag1:false,
+        nowfood:'',
       }
     },
     components:{
@@ -72,7 +75,7 @@
       Food
     },
     created(){
-
+      console.log("ooo")
       let that=this;
       axios.get("http://192.168.1.66:8080/api/goods").then(res=>{
         that.goods=res.data.data;
