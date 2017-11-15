@@ -42,12 +42,16 @@
       </div>
       <!--购物车组件-->
       <div class="cart-wrapper">
-        <shopcart :selectFoods="selectFoods"></shopcart>
+        <shopcart :selectFoods="selectFoods" @send="getFlag"></shopcart>
       </div>
       <!--商品详情页-->
     </div>
-  <food :foods="nowfood" :flag="flag1"></food>
+    <div class="background" v-show="flag2"></div>
+    <transition name="slide">
+      <food class="detail" :foods="nowfood"  ref="food"></food>
+    </transition>
   </div>
+
 </template>
 <script>
   import Food from './food/Food.vue';
@@ -64,6 +68,7 @@
         menuScroll:null,
         goodsScroll:null,
         scrollY:0,
+        flag2:'',
         foodsHeight:[],
         flag1:false,
         nowfood:'',
@@ -75,13 +80,14 @@
       Food
     },
     created(){
-      console.log("ooo")
       let that=this;
       axios.get("http://192.168.1.66:8080/api/goods").then(res=>{
+        //用goods保存json文件中的goods值
         that.goods=res.data.data;
 
         that.$nextTick(()=>{
           //保证数据更新后引起的dom 更新后被调用
+
           that.menuScroll=new BetterScroll(that.$refs.menuWrapper,{});
           that.goodsScroll=new BetterScroll(that.$refs.goodsWrapper,{click:true,probeType:3});
           //计算高度
@@ -99,11 +105,15 @@
 
     },
     methods:{
+      getFlag(flag){
+        this.flag2=flag;
+        console.log(this.flag2);
+      },
       food0(){
-        this.flag1=!this.flag1;
-        console.log(this.flag1);
+        this.$refs.food.show()
       },
       calcHeight(){
+        //获取一组商品的title 位置
         let foodsList=this.$refs.goodsWrapper.getElementsByClassName("food-list");
         let height=0;
         this.foodsHeight.push(height);
@@ -117,6 +127,7 @@
       }
     },
     computed:{
+      //保证因在同一个框中有两个大类，以上一个类为准
       menuCurrIndex(){
         for(let i=0;i<this.foodsHeight.length;i++){
           let h1=this.foodsHeight[i];
@@ -300,5 +311,14 @@
        }
      }
    }
+
  }
+ /*.detail{
+   position: fixed;
+   width:100%;
+   height:100%;
+   top: 0;
+   bottom:0;
+   left: 0;
+ }*/
 </style>

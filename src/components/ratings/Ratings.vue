@@ -64,12 +64,16 @@
         </div>
       </div>
     </div>
+    <div class="shop">
+      <!--<shopcart :selectFoods="selectFoods"></shopcart>-->
+    </div>
   </div>
 
 </template>
 
 <script>
   import Star from '../star/Star.vue';
+//  import Shopcart from '../shopcart/shopCart.vue'
   import axios from 'axios';
 
 
@@ -81,14 +85,7 @@
         seller: [],
         rating: [],
         type: -1,
-        /*allRating:[],
-        satisRating:[],
-        unsatisRating:[],
-        hasTextRating:[],
-        nowRating:[],
-        nowpartRating:[],*/
-        test: '',
-//        iconFlag: false,
+        goods:[],
         flag: false
 
 
@@ -96,7 +93,8 @@
     },
     components: {
       Star,
-      BetterScroll
+      BetterScroll,
+//      Shopcart
     },
     computed: {
       timeShow() {
@@ -126,8 +124,7 @@
           }
         });
         return count;
-      }
-
+      },
     },
     methods: {
       /*all1(){
@@ -167,13 +164,7 @@
         this.flag=!this.flag;
       },*/
       getData(num) {
-        if (num == -1) {
-          this.type = num;
-        } else if (num == 0) {
-          this.type = num;
-        } else if (num == 1) {
-          this.type = num;
-        }
+        this.type=num;
       },
       textType() {
         this.flag = !this.flag;
@@ -197,7 +188,6 @@
 
       },
       isShow(rateType, text) {
-        console.log("ppp")
         if (this.flag && text == '') {
           return false;
         }
@@ -220,6 +210,11 @@
       }).catch(err => {
         console.log(err);
       });
+      axios.get("http://192.168.1.66:8080/api/goods").then(res=>{
+        that.goods=res.data.data;
+      }).catch(err=>{
+        console.log(err);
+      });
       axios.get("http://192.168.1.66:8080/api/ratings").then(res => {
         that.rating = res.data.data;
         console.log(that.rating);
@@ -230,9 +225,6 @@
         console.log(err);
 
       });
-      console.log(this.nowRating + "<br>" + this.nowpartRating);
-
-
     },
     filters: {
       myDate(time) {
@@ -467,6 +459,11 @@
           }
         }
       }
+    }
+    .shop{
+      position: absolute;
+      bottom: 0px;
+      left: 0;
     }
 
   }

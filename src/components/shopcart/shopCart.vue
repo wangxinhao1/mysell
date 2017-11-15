@@ -1,7 +1,8 @@
 <template>
     <div class="shopcart" v-if="selectFoods!=null">
-      <div class="content">
-        <div class="shoppingCart" v-show="flag">
+      <div class="content" @click="sendFlag">
+        <transition name="cart">
+          <div class="shoppingCart" v-show="flag">
           <div class="title">
             <span class="cart">购物车</span>
             <span class="clear" @click="clear()" >清空</span>
@@ -18,6 +19,7 @@
             </ul>
           </div>
         </div>
+        </transition>
         <div class="content-left">
           <div class="logo-wrapper">
            <div class="logo" :class="{highlight:totalCount>0}" @click="cart()">
@@ -76,6 +78,11 @@
         });
 
       },
+      sendFlag(){
+        let flag=this.flag;
+        this.$emit('send',flag);
+
+      }
   },
     computed:{
       totalCount(){
@@ -103,6 +110,14 @@
 </script>
 
 <style lang="less" rel="stylesheet/less">
+  .background{
+    position: absolute;
+    background:rgba(7,17,27,0.3);
+    width:100%;
+    top:0;
+    bottom:0;
+
+  }
   .shopcart{
     width:100%;
     position:fixed;
@@ -121,6 +136,22 @@
         bottom:50px;
         left: 0;
         overflow: hidden;
+        transition:all 1s;
+
+        &.cart-enter, &.cart-leave-active{
+
+         /*transfrom:translateY(100%)*/;
+          transfrom:translate3d(0,100%,0);
+          opacity:1;
+          transition:all 1s;
+
+
+        }
+        &.cart-enter, &.cart-leave-to{
+          opacity:0;
+          transfrom:translate3d(0,0%,0);
+
+        }
         .title{
           width:100%;
           height:40px;

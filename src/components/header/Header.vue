@@ -33,7 +33,9 @@
         <img :src="seller.avatar" alt="">
       </div>
       <!--详情弹层-->
-      <div class="detail" v-show="detailShow">
+      <transition name="fade">
+        <!---->
+        <div class="detail" v-show="detailShow" >
         <!--css sticky footers-->
         <div class="detail-wrapper clearfix">
           <div class="detail-main">
@@ -80,7 +82,9 @@
           <span class="icon-close"></span>
         </div>
       </div>
+      </transition>
     </div>
+
 
 </template>
 
@@ -240,6 +244,7 @@
 
       }
     }
+
     & .detail{//详情页的
       position:fixed;
       top: 0;
@@ -249,6 +254,17 @@
       height: 100%;
       overflow:auto;
       background: rgba(7,17,27,0.8);
+      &.fade-enter-active, &.fade-leave-active{
+        opacity:1;
+        left:0px;
+        transition: all 1s;
+      }
+      &.fade-enter, &.fade-leave-to{
+        opacity: 0;
+        left:375px;
+
+
+      }
 
       & .detail-wrapper{
         min-height: 100%;
@@ -362,7 +378,12 @@
       }
     }
 
+
   }
+  /*.aaa{
+    transform: translateX(0);
+  }*/
+
   /*.header{
   color:#fff;
    background:rgba(0,0,0,0.5);

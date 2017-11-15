@@ -1,7 +1,8 @@
 <template>
-    <div class="food"  v-if="foods!=null" v-show="flag">
-      <div class="foodList" ref="detailSwiper">
-        <div>
+  <!--<transition  name="slide">-->
+    <div class="food" ref="detailWrapper" >
+      <div>
+        <div  v-show="flag">
           <i class="close icon-close" @click="flag=false"></i>
           <div class="img">
             <img :src="foods.image" class="foodImg" alt="">
@@ -21,36 +22,129 @@
               <span class="name">商品介绍</span>
               <span class="info">{{foods.info}}</span>
             </div>
+            <div class="rating-head">
+              <span class="title">商品评价</span>
+              <div class="rating-item">
+                <span class="item item-all" @click="getData(-1)">全部 <em class="num">{{all()}}</em> </span>
+                <span class="item item-recommend" @click="getData(0)">推荐 <em class="num">{{recommend()}}</em> </span>
+                <span class="item item-unrecommend" @click="getData(1)">吐槽 <em class="num">{{unrecommend()}}</em></span>
+              </div>
+              <div class="part-rating" @click="getFlag()">
+                <i class="icon-check_circle" :class="{righted:flag0}" ></i>
+                <span class="content">只查看有内容的评价</span>
+              </div>
+            </div>
+            <div class="rating-list">
+              <ul>
+                <li class="rating-list-cont"  v-for="rat in foods.ratings" v-show="isShow(rat.rateType,rat.text)">
+                  <div class="timeAndName">
+                    <span class="time">{{rat.rateTime | getTime}}</span>
+                    <div class="name">
+                      <span class="customerName">{{rat.username}}</span>
+                      <img class="customerImg" :src="rat.avatar" alt="" width="12" height="12">
+                    </div>
+                  </div>
+                  <div class="vot-wrapper">
+                    <i :class="thumb(rat.rateType)" class="icon"></i>
+                    <span class="rating-content">{{rat.text}}</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
+  <!--</transition>-->
 </template>
 
 <script>
+  import BetterScroll from 'better-scroll';
   import axios from 'axios';
   export default {
-    props:['foods','flag'],
+    props:['foods'],
     data(){
       return {
-        detailScroll:''
+        detailScroll:null,
+        flag:false,
+        good:'',
+        type:'',
+        flag0:false
       }
     },
     created(){
       let that=this;
       axios.get("http://192.168.1.66:8080/api/goods").then(res=>{
-        console.log(res);
-        that.$nextTick(()=>{
-          that.detailScroll=new BetterScroll(this.$refs.detailSwiper,{click:true});
-        });
+        this.good=res.data.data;
       }).catch(err=>{
         console.log(err);
       });
     },
     methods:{
-      change(){
+      getData(num){
+        this.type=num;
+        console.log(num);
+      },
+      isShow(ratetype,text){
+        if(this.flag0 && text==''){
+          return false;
+        }
+        if(this.type==-1){
+          return true;
+        }else if(ratetype==this.type){
+          return true;
+        }
+        return false;
+      },
+      getFlag(){
+        this.flag0=!this.flag0;
+        console.log(this.flag0)
+      },
+      show(){
+        this.flag=true;
+        this.$nextTick(()=>{
+          this.detailScroll=new BetterScroll(this.$refs.detailWrapper,{
+            click:true
+          });
+        });
+      },
+      all(){
+        let count=0;
+        this.foods.ratings.forEach(res=>{
+          count++;
+        });
+        return count;
+      },
+      recommend(){
+        let count=0;
+        this.foods.ratings.forEach(res=>{
+          if(res.rateType==0){
+            count++;
+          }
+        });
+        return count;
+      },
+      unrecommend(){
+        let count=0;
+        this.foods.ratings.forEach(res=>{
+          if(res.rateType==1){
+            count++;
+          }
+        });
+        return count;
+      },
+      thumb(rate){
+        let arr=["icon-thumb_up","icon-thumb_down"];
+        return arr[rate];
+      }
+    },
+    computed:{
 
+    },
+    filters:{
+      getTime(time){
+        var data=new Date(time);
+        return data.getFullYear()+"-"+data.getMonth()+"-"+data.getDate()+" "+data.getHours()+":"+data.getMinutes();
       }
     }
   }
@@ -58,23 +152,19 @@
 
 <style lang="less" rel="stylesheet/less">
   .food{
-    position: absolute;
-    background: rbga(7,17,27,0.3);
+    position:absolute;
     top: 0px;
-    bottom: 0;
-    left: 0px;
-    background: rgb(255,255,255);
-    z-index: 1;
-    .foodList{
-      position: absolute;
-      top: 0;
-      bottom: 0;
+    bottom: 46px;
+    height:100%;
+    overflow: hidden;
+    background:rgba(7,17,27,0.2);
       .close{
-        position: absolute;
+        position: fixed;
         left: 18px;
         top: 18px;
         color:rgba(7,17,27,0.5);
         z-index: 1;
+        color:#fff;
       }
       .img{
         background: #fff;
@@ -162,9 +252,123 @@
             font-weight: 200;
           }
         }
+        .rating-head{
+          margin-top:16px;
+          background:#fff;
+          padding: 18px;
+          border-bottom: 1px solid rgba(7,17,27,0.2);
+          .title{
+            display: block;
+            font-size: 14px;
+            color:rgb(7,17,27);
+            line-height: 14px;
+          }
+          .rating-item{
+            padding:18px 0;
+            border-bottom: 1px solid rgba(7,17,27,0.2);
+
+            .item{
+              display:inline-block;
+              /*float: left;*/
+              padding: 8px;
+              font-size: 12px;
+              line-height:16px;
+              text-align: center;
+              margin-right:8px;
+
+              &.item-all{
+                color:rgba(7,17,27,0.8);
+                background:rgba(0,0,255,0.6);
+              }
+              &.item-recommend{
+                color:rgba(7,17,27,0.7);
+                background: rgba(0,0,255,0.4);
+              }
+              &.item-unrecommend{
+                color:rgba(7,17,27,0.6);
+                background: rgba(0,0,255,0.2);
+              }
+              .num{
+                font-size: 10px;
+                font-style: normal;
+              }
+            }
+          }
+          .part-rating{
+            padding:12px 0;
+            &.righted{
+              color:rgba(0,0,255,0.8);
+              font-size:20px;
+            }
+            .icon-check_circle{
+              color:rgb(147,153,159);
+              font-size: 24px;
+              line-height: 24px;
+              margin-right:4px;
+
+            }
+            .content{
+              font-size: 12px;
+              line-height: 24px;
+              color:rgb(147,153,159);
+            }
+          }
+        }
+        .rating-list{
+          padding:0 12px;
+          .rating-list-cont{
+            padding:48px 0;
+            border-bottom: 1px solid rgba(7,17,27,0.2);
+            box-sizing: border-box;
+            .timeAndName{
+              .time{
+                float: left;
+                font-size: 10px;
+                color:rgb(147,153,159);
+                line-height: 12px;
+              }
+              .name{
+                float: right;
+                .customerName{
+                  font-size:10px;
+                  color:rgb(147,153,159);
+                  line-height: 12px;
+                  margin-right:6px;
+                }
+                .customerImg{
+                  width:12px;
+                  height: 12px;
+                  border-radius: 50%;
+                  display: inline-block;
+                }
+              }
+            }
+            .vot-wrapper{
+              float: left;
+              width:100%;
+              display: block;
+              .icon{
+                font-size: 12px;
+                line-height: 24px;
+                color:rgb(147,153,159);
+                margin-right:4px;
+              }
+              .rating-content{
+                font-size:12px;
+                color:rgb(7,17,27);
+                line-height: 16px;
+              }
+
+            }
+          }
+        }
 
       }
+    .selected{
+      color:rgb(255,255,255);
+      background:rgb(0,0,255);
     }
+
 
   }
 </style>
