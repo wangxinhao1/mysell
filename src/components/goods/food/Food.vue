@@ -1,6 +1,6 @@
 <template>
   <!--<transition  name="slide">-->
-    <div class="food" ref="detailWrapper" >
+    <div class="food" ref="detailWrapper" v-if="foods!=null">
       <div>
         <div  v-show="flag">
           <i class="close icon-close" @click="flag=false"></i>
@@ -16,7 +16,7 @@
                   <span class="now">￥<em class="nowprice">{{foods.price}}</em></span>
                   <span class="old">￥{{foods.oldprice}}</span>
                 </div>
-                <span class="cart">加入购物车</span>
+                <span class="cart" @click="food_add()">加入购物车</span>
               </div>
             <div class="introduction">
               <span class="name">商品介绍</span>
@@ -61,29 +61,26 @@
 <script>
   import BetterScroll from 'better-scroll';
   import axios from 'axios';
+  import Vue from 'vue'
   export default {
     props:['foods'],
     data(){
       return {
         detailScroll:null,
         flag:false,
-        good:'',
         type:'',
-        flag0:false
+        flag0:false,
+        count0:0
       }
-    },
-    created(){
-      let that=this;
-      axios.get("http://192.168.1.66:8080/api/goods").then(res=>{
-        this.good=res.data.data;
-      }).catch(err=>{
-        console.log(err);
-      });
     },
     methods:{
       getData(num){
         this.type=num;
         console.log(num);
+        this.$nextTick(()=>{
+          this.detailScroll.refresh();
+        });
+
       },
       isShow(ratetype,text){
         if(this.flag0 && text==''){
@@ -136,6 +133,13 @@
       thumb(rate){
         let arr=["icon-thumb_up","icon-thumb_down"];
         return arr[rate];
+      },
+      food_add(){
+        if(!this.foods.count){
+          Vue.set(this.foods,'count',1);
+        }else{
+          this.foods.count++;
+        }
       }
     },
     computed:{
@@ -315,9 +319,9 @@
           }
         }
         .rating-list{
-          padding:0 12px;
+          padding:0 12px 50px 12px;
           .rating-list-cont{
-            padding:48px 0;
+            padding:12px 0 48px 0;
             border-bottom: 1px solid rgba(7,17,27,0.2);
             box-sizing: border-box;
             .timeAndName{

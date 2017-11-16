@@ -73,7 +73,7 @@
 
 <script>
   import Star from '../star/Star.vue';
-//  import Shopcart from '../shopcart/shopCart.vue'
+  //  import Shopcart from '../shopcart/shopCart.vue'
   import axios from 'axios';
 
 
@@ -85,9 +85,9 @@
         seller: [],
         rating: [],
         type: -1,
-        goods:[],
-        flag: false
-
+        goods: [],
+        flag: false,
+        ratingScroll: null
 
       }
     },
@@ -127,57 +127,16 @@
       },
     },
     methods: {
-      /*all1(){
-        this.rating.forEach(res=>{
-          this.allRating.push(res);
-          this.nowRating=this.allRating;
-        });
-      },
-      satisfation(){
-        this.rating.forEach(res=>{
-          if(res.rateType==0){
-            this.satisRating.push(res);
-            this.nowRating=this.satisRating;
-          }
-        });
-      },
-      unsatisfation(){
-        this.rating.forEach(res=>{
-          if(res.rateType==1){
-            this.unsatisRating.push(res);
-            this.nowRating=this.unsatisRating;
-          }
-        });
-      },
-      change(){
-        if(this.flag){
-          this.nowpartRating=this.nowRating;
-        }else{
-          this.nowRating.forEach(res=>{
-            if(res.text!=''){
-              this.hasTextRating.push(res);
-              this.nowpartRating=this.hasTextRating;
-            }
-
-          });
-        }
-        this.flag=!this.flag;
-      },*/
       getData(num) {
-        this.type=num;
+        let that = this;
+        this.type = num;
+        that.$nextTick(() => {
+          that.ratingScroll.refresh();
+        });
       },
       textType() {
         this.flag = !this.flag;
-        /*
-                if(this.flag){
-                  this.rating.forEach(res=> {
-                    if (res.text != '') {
-        //              this.flag = false;
-                    }
-                  }
-                }*/
       },
-
       thumbArr(num) {
         let arr = ["icon-thumb_up", "icon-thumb_down"];
         if (num == 0) {
@@ -199,8 +158,6 @@
         return false;
 
       },
-
-
     },
     created() {
       console.log("iii");
@@ -210,20 +167,21 @@
       }).catch(err => {
         console.log(err);
       });
-      axios.get("http://192.168.1.66:8080/api/goods").then(res=>{
-        that.goods=res.data.data;
-      }).catch(err=>{
+      axios.get("http://192.168.1.66:8080/api/goods").then(res => {
+        that.goods = res.data.data;
+      }).catch(err => {
         console.log(err);
       });
       axios.get("http://192.168.1.66:8080/api/ratings").then(res => {
         that.rating = res.data.data;
         console.log(that.rating);
-        this.$nextTick(() => {
-          this.ratingScroll = new BetterScroll(this.$refs.ratingSwiper, {click: true});
+        that.$nextTick(() => {
+          if (that.ratingScroll == null) {
+            that.ratingScroll = new BetterScroll(that.$refs.ratingSwiper, {click: true});
+          }
         });
       }).catch(err => {
         console.log(err);
-
       });
     },
     filters: {
@@ -460,7 +418,7 @@
         }
       }
     }
-    .shop{
+    .shop {
       position: absolute;
       bottom: 0px;
       left: 0;

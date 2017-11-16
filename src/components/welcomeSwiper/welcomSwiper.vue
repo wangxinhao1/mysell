@@ -5,7 +5,7 @@
       </swiper-slide>
       <swiper-slide class="two">
         <div class="twoInner">
-          <router-link to="/main">
+          <router-link to="/main" @click="stop()">
             立即体验
           </router-link>
         </div>
@@ -54,6 +54,9 @@
           }
         },1000);
 
+
+      },
+      stop(){
 
       }
     }

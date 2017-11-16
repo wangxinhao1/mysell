@@ -16,9 +16,9 @@
           <li class="food-list" v-for="good in goods" >
             <h3 class="title">{{good.name}}</h3>
             <ul>
-              <li class="food-item" v-for="food in good.foods" @click="nowfood=food">
+              <li class="food-item" v-for="food in good.foods" @click="showFood(food)">
                 <div class="icon">
-                  <img :src="food.image" @click="food0()" width="57" height="57" alt="">
+                  <img :src="food.image" width="57" height="57" alt="">
                 </div>
                 <div class="content">
                   <h2 class="name">{{food.name}}</h2>
@@ -48,7 +48,7 @@
     </div>
     <div class="background" v-show="flag2"></div>
     <transition name="slide">
-      <food class="detail" :foods="nowfood"  ref="food"></food>
+      <food class="detail" :foods="nowFood"  ref="food"></food>
     </transition>
   </div>
 
@@ -71,7 +71,7 @@
         flag2:'',
         foodsHeight:[],
         flag1:false,
-        nowfood:'',
+        nowFood: null,
       }
     },
     components:{
@@ -109,9 +109,6 @@
         this.flag2=flag;
         console.log(this.flag2);
       },
-      food0(){
-        this.$refs.food.show()
-      },
       calcHeight(){
         //获取一组商品的title 位置
         let foodsList=this.$refs.goodsWrapper.getElementsByClassName("food-list");
@@ -124,6 +121,11 @@
 
         };
 
+      },
+      showFood(food){
+        console.log(food);
+        this.nowFood = food;
+        this.$refs.food.show();
       }
     },
     computed:{
@@ -249,15 +251,6 @@
          border-bottom: none;
 
        }
-       /*&:after{
-         width:100%;
-         height:1px;
-         background:rgba(7,17,27,0.8);
-         position:absolute;
-         bottom: 0;
-         left:0;
-         content: '';
-       }*/
        .icon{
          flex:0 0 57px;
          margin-right:10px;
@@ -311,14 +304,15 @@
        }
      }
    }
+   .detail{
+     position: fixed;
+     width:100%;
+     height:100%;
+     top: 0;
+     bottom:46px;
+     left: 0;
+   }
 
  }
- /*.detail{
-   position: fixed;
-   width:100%;
-   height:100%;
-   top: 0;
-   bottom:0;
-   left: 0;
- }*/
+
 </style>

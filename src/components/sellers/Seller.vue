@@ -55,8 +55,8 @@
         </div>
         <div class="factView">
           <span class="title">商家实景</span>
-          <div class="imgList" ref="imgWrapper">
-            <ul >
+          <div class="imgList" ref="imgWrapper" >
+            <ul :style="{width:width()}">
               <li class="img" v-for="imgItem in seller.pics">
                 <img :src="imgItem" alt="" width="120" height="90">
               </li>
@@ -106,16 +106,14 @@
       axios.get("http://192.168.1.66:8080/api/seller").then(res=>{
 
         that.seller=res.data.data;
-
+        that.width();
+        console.log(that.width());
         that.$nextTick(()=> {
           //保证数据更新后引起的dom 更新后被调用
 
           that.sellerScroll = new BetterScroll(that.$refs.sellerWrapper, {click: true});
-          that.imgScroll=new BetterScroll(that.$refs.imgWrapper,{click:true,/*direction: 'vertical'*/scrollX:true });
-          //计算高度
-          /*that.goodsScroll.on("scroll",(pos)=>{
-            that.scrollY=Math.abs(Math.round(pos.y));
-            console.log(that.scrollY);*/
+          that.imgScroll=new BetterScroll(that.$refs.imgWrapper,
+            {click:true,/*direction: 'vertical'*/scrollX:true });
         });
       }).catch(err=>{
         console.log(err);
@@ -128,6 +126,9 @@
       this.picMap=['decrease','discount','guarantee','invoice','special']
     },
     methods:{
+      width(){
+        return this.seller.pics.length*126+"px";
+      }
     },
     computed:{
       selectFoods(){
@@ -141,6 +142,7 @@
         });
         return foods;
       }
+
     }
   }
 </script>
@@ -362,7 +364,7 @@
         float: left;
         ul{
 
-          width:150%;
+          /*width:150%;*/
           .img{
             float:left;
             width:120px;
@@ -419,3 +421,8 @@
     }
   }
 </style>
+
+<!--计算高度
+/*that.goodsScroll.on("scroll",(pos)=>{
+that.scrollY=Math.abs(Math.round(pos.y));
+console.log(that.scrollY);*-->
